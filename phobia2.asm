@@ -1,4 +1,5 @@
 sensor_d = 0x27
+jump_d = 0x200
 killer_loop_count = 10
 
 push_attack_start_location = 0x7FFF
@@ -65,7 +66,7 @@ or bp,1 ; attck odd byes, where mamaliga and zorg, put movsw
 xor si,si ; get ready for copy jump
 
 ; setup new sensors
-mov [bp + (@checkloop-@start) + (@end-@checkloop) + sensor_d],al ; TODO optimize distnase
+mov [bp + (@checkloop-@start) + (@end-@checkloop) + sensor_d],al
 mov [bp + (@checkloop-@start) - sensor_d],al
           
 @checkloop:
