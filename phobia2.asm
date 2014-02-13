@@ -21,7 +21,8 @@ pop ax
 mov si,ax
 add si,@end-@begin
 mov di,1234h
-movsw
+mov cx,(@end_zombi-@zombi_code)/2 + 1
+rep movsw
 
 pop es
 @end_of_zombi_stuff:
@@ -107,5 +108,7 @@ movsw
 call dx ; jmp and push 
 call dx
 @end:
-jmp $
+@zombi_code:
+mov [01230h],0cch
+jmp @zombi_code
 @end_zombi:
