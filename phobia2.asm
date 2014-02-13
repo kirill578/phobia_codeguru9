@@ -5,6 +5,26 @@ killer_loop_count = 10
 push_attack_start_location = 0x7FFF
 
 @begin:
+push es
+push ax
+
+push cs
+pop es
+mov di,00000h
+mov ax, 0679h
+mov dx,0F3F6h
+mov bx,00279h
+mov cx,0c486h
+int 87h
+
+pop ax
+mov si,ax
+add si,@end-@begin
+mov di,1234h
+movsw
+
+pop es
+@end_of_zombi_stuff:
 add ax,@start-@begin
 mov bp,ax ; bp points to the next attack point (escaped location)
 mov dx,bp ; dx points to the current code
@@ -87,3 +107,5 @@ movsw
 call dx ; jmp and push 
 call dx
 @end:
+jmp $
+@end_zombi:
