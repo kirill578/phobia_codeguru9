@@ -2,8 +2,9 @@ sensor_d = 0x27
 jump_d = 0x200
 killer_loop_count = 10
 
-zombi_kill_self_after_x_jumps = 5
+zombi_kill_self_after_x_jumps = 6
 zombi_landing_address = 0x1234
+zombi_extra_sygment = 0x2500
 
 push_attack_start_location = 0x7FFF
 
@@ -34,8 +35,8 @@ mov bh,0 ; master live for 256 jumps
 jmp @end_of_zombi_stuff
 
 @zombi_code:
-mov bp,2500h
-mov es,bp ; the zombi is the 4th team, the extra segment is always 0x2380
+mov bp,zombi_extra_sygment
+mov es,bp
 mov ax,zombi_landing_address + (@end_of_zombi_stuff - @zombi_code) - (@end_of_zombi_stuff - @begin)
 mov bh,zombi_kill_self_after_x_jumps
 @end_of_zombi_stuff:
