@@ -2,6 +2,9 @@ sensor_d = 0x27
 jump_d = 0x200
 killer_loop_count = 10
 
+zombi_kill_self_after_x_jumps = 5
+zombi_landing_address = 0x1234
+
 push_attack_start_location = 0x7FFF
 
 @begin:
@@ -20,19 +23,21 @@ int 87h
 pop ax
 mov si,ax
 add si,@zombi_code-@begin
-mov di,1234h
+mov di,zombi_landing_address
 mov cx,(@end_zombi-@zombi_code)/2 + 1
 rep movsw
 
 pop es
 
+mov bh,0 ; master live for 256 jumps
+
 jmp @end_of_zombi_stuff
 
 @zombi_code:
-mov bp,2380h
+mov bp,2500h
 mov es,bp ; the zombi is the 4th team, the extra segment is always 0x2380
-mov ax,1234h + (@end_of_zombi_stuff - @zombi_code) - (@end_of_zombi_stuff - @begin)
-
+mov ax,zombi_landing_address + (@end_of_zombi_stuff - @zombi_code) - (@end_of_zombi_stuff - @begin)
+mov bh,zombi_kill_self_after_x_jumps
 @end_of_zombi_stuff:
 add ax,@start-@begin
 mov bp,ax ; bp points to the next attack point (escaped location)
@@ -49,6 +54,8 @@ pop es
 
 push cs ; set stuck as public
 pop ss
+
+mov ah,bh ; master can move 256 before killing self
 
 mov sp,push_attack_start_location
 mov bx,0cch ; push attak
@@ -94,6 +101,9 @@ mov bp,dx ; set next attack location to this code
 or bp,1 ; attck odd byes, where mamaliga and zorg, put movsw
 xor si,si ; get ready for copy jump
 
+dec ah
+jz @kill_self
+
 ; setup new sensors
 mov [bp + (@checkloop-@start) + (@end-@checkloop) + sensor_d],al
 mov [bp + (@checkloop-@start) - sensor_d],al
@@ -113,7 +123,8 @@ add dx,jump_d
 @coping:
 mov di,dx
 movsw
-call dx ; jmp and push 
-call dx
+call dx ; jmp and push
+@kill_self: 
+int 3
 @end:
 @end_zombi:
