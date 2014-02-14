@@ -19,12 +19,20 @@ int 87h
 
 pop ax
 mov si,ax
-add si,@end-@begin
+add si,@zombi_code-@begin
 mov di,1234h
 mov cx,(@end_zombi-@zombi_code)/2 + 1
 rep movsw
 
 pop es
+
+jmp @end_of_zombi_stuff
+
+@zombi_code:
+mov bp,2380h
+mov es,bp ; the zombi is the 4th team, the extra segment is always 0x2380
+mov ax,1234h + (@end_of_zombi_stuff - @zombi_code) - (@end_of_zombi_stuff - @begin)
+
 @end_of_zombi_stuff:
 add ax,@start-@begin
 mov bp,ax ; bp points to the next attack point (escaped location)
@@ -108,7 +116,4 @@ movsw
 call dx ; jmp and push 
 call dx
 @end:
-@zombi_code:
-mov [01230h],0cch
-jmp @zombi_code
 @end_zombi:
