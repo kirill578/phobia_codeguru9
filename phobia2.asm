@@ -37,14 +37,24 @@ jmp @end_of_zombi_stuff
 @zombi_code:
 mov bp,zombi_extra_sygment
 mov es,bp
-mov ax,zombi_landing_address + (@end_of_zombi_stuff - @zombi_code) - (@end_of_zombi_stuff - @begin)
+mov ax,zombi_landing_address
+push es
+pop ds
+cmp [0h],0 ; es has 0
+je @first_one
+add ax,4000h
+sub cx,(@end-@start)/2
+@first_one:
+push cs
+pop ds
+add ax,(@end_of_zombi_stuff - @zombi_code) - (@end_of_zombi_stuff - @begin)
 mov bh,zombi_kill_self_after_x_jumps
 @end_of_zombi_stuff:
 add ax,@start-@begin
 mov bp,ax ; bp points to the next attack point (escaped location)
 mov dx,bp ; dx points to the current code
 mov si,bp
-mov cx,(@end-@start)/2
+add cx,(@end-@start)/2
 mov di,0
 rep movsw
 
