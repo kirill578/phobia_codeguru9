@@ -144,7 +144,10 @@ rep movsw ; copy rest of the code
 @final_copy:
 
 mov bp,dx ; set next attack location to this code 
-or bp,1 ; attck odd byes, where mamaliga and zorg, put movsw
+
+and bp,0FFFEH ; support for buggy version
+inc bp
+
 xor si,si ; get ready for copy jump
 
 ; setup new sensors
