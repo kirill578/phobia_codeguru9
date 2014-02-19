@@ -5,88 +5,57 @@ killer_loop_count = 10
 push_attack_start_location = 0x0000
 
 @begin:
-std
-call @clear_input
-push es
-push ax
-push cs
-pop es
-mov di,00000h
-mov ax, 0679h
-mov dx,0F3F6h
-mov bx,00279h
-mov cx,0c486h
-int 87h
+mov bp,0 ; dont rememeber what it is
+push ax ; backup our address
+xor ax,ax ; wait
+xor ax,ax ; wait
+
+@lp:
+mov [0c0deh + si],254
+xor ax,ax ; wait
+xor ax,ax ; wait
+xor ax,ax ; wait
+xor ax,ax ; wait
+xor ax,ax ; wait  
+
+mov [0c0deh + si],255 ;get the zombi moving
+mov al,[0c0ddh + si]
+mov bl,255 ; first cannot overflow
+mul bl
+mov cx,ax
+
+xor ax,ax ; wait
+xor ax,ax ; wait
+
+xor ax,ax
+mov al,[0c0ddh + si]
+mov bx,64516 ;254*254
+mul bx
+add ax,cx ; add the last number
+adc dx,0 ; add carry, if overflows
+mov bx,64770 ;255*254
+div bx ; orginal number is in dx
+
+mov di,dx
+
+mov word [di +17h +4],0010h ; write backward
+mov word [di +17h +2],0012h
+mov word [di +17h],34eah
+
+mov word [di + 8000h +17h +4],0010h ; write backward
+mov word [di + 8000h +17h +2],0012h
+mov word [di + 8000h +17h],34eah
+
+xor ax,ax ; wait
+
+add si,100h
+cmp si,600h
+
+jne @lp
+
 pop ax
 
-mov bx,2
-
-@get_a_zombie:
-
-call @clear_input
-call @clear_output
-call @clear_input
-
-mov cx,6
-mov di,0c0ddh
-@find_infected:
-cmp [di],1
-jne @found
-add di,100h
-loop @find_infected
-jmp @not_found
-@found:
-mov dh,[di]
-mov [di+1],80h
-call @clear_output
-test al,al ; might not be ready
-test al,al
-test al,al
-test al,al
-mov dl,[di]
-
-@attack:
-add dx,17h +4h 
-
-mov cx,2
-@attack_loop:
-mov di,dx
-mov si,ax
-add si,@jmpcode-@begin +4h
-movsw
-movsw
-movsw 
-add dh,80h
-loop @attack_loop
-
-dec bx
-jnz @get_a_zombie
-
-@not_found:
-jmp @end_zombi_stuff
-
-@clear_input:
-mov [0c0deh],1
-mov [0c1deh],1
-mov [0c2deh],1
-mov [0c3deh],1
-mov [0c4deh],1
-mov [0c5deh],1
-ret
-@clear_output:
-mov [0c0ddh],1
-mov [0c1ddh],1
-mov [0c2ddh],1
-mov [0c3ddh],1
-mov [0c4ddh],1
-mov [0c5ddh],1
-ret
-@jmpcode:
-jmp 1000h:01234h
-
 @end_zombi_stuff:   
-cld
-pop es
 add ax,@start-@begin
 mov bp,ax ; bp points to the next attack point (escaped location)
 mov dx,bp ; dx points to the current code

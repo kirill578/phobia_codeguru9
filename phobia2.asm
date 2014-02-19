@@ -10,18 +10,10 @@ push_attack_start_location = 0x7FFF
 
 @begin:
 push es
-push ax
 
 push cs
 pop es
-mov di,00000h
-mov ax, 0679h
-mov dx,0F3F6h
-mov bx,00279h
-mov cx,0c486h
-int 87h
 
-pop ax
 mov si,ax
 add si,@zombi_code-@begin
 mov di,zombi_landing_address
@@ -40,11 +32,12 @@ mov es,bp
 mov ax,zombi_landing_address
 push es
 pop ds
-cmp [0h],0 ; es has 0
+cmp [3FEh],0 ; es has 0
 je @first_one
-add ax,4000h
+add ax,[3FFh]
 sub cx,(@end-@start)/2
 @first_one:
+add [3FEh],2070h
 push cs
 pop ds
 add ax,(@end_of_zombi_stuff - @zombi_code) - (@end_of_zombi_stuff - @begin)
