@@ -29,15 +29,27 @@ adc dx,0 ; add carry, if overflows
 mov bx,64770 ;255*254
 div bx ; orginal number is in dx
 
-push dx ; store zombi
+mov di,dx
+
+mov word [di +17h],34eah
+mov word [di +17h +2],0012h
+mov word [di +17h +4],0010h
+
+mov word [di + 8000h +17h],34eah
+mov word [di + 8000h +17h +2],0012h
+mov word [di + 8000h +17h +4],0010h
 
 xor ax,ax
-xor ax,ax
-xor ax,ax
-xor ax,ax
-xor ax,ax
-xor ax,ax
-xor ax,ax
+
+;push dx ; store zombi
+
+;xor ax,ax
+;xor ax,ax
+;xor ax,ax
+;xor ax,ax
+;xor ax,ax
+;xor ax,ax
+;xor ax,ax
 
 add si,100h
 cmp si,600h
