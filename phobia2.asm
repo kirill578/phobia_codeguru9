@@ -34,7 +34,7 @@ push es
 pop ds
 cmp [3FEh],0 ; es has 0
 je @first_one
-add ax,[3FFh]
+add ax,[3FEh]
 sub cx,(@end-@start)/2
 @first_one:
 add [3FEh],2070h
@@ -59,9 +59,11 @@ pop es
 push cs ; set stuck as public
 pop ss
 
+mov sp,ax
+sub sp,200h
+
 mov ah,bh ; master can move 256 before killing self
 
-mov sp,push_attack_start_location
 mov bx,0cch ; push attak
 
 mov si,0
