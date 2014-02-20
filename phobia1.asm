@@ -39,12 +39,12 @@ div bx ; orginal number is in dx
 mov di,dx
 
 mov word [di +17h +4],0010h ; write backward
-mov word [di +17h +2],0012h
-mov word [di +17h],34eah
+mov word [di +17h +2],0010h
+mov word [di +17h],0b0eah
 
 mov word [di + 8000h +17h +4],0010h ; write backward
-mov word [di + 8000h +17h +2],0012h
-mov word [di + 8000h +17h],34eah
+mov word [di + 8000h +17h +2],0010h
+mov word [di + 8000h +17h],0b0eah
 
 xor ax,ax ; wait
 
@@ -75,6 +75,11 @@ pop ss
 mov sp,push_attack_start_location
 mov bx,0cch ; push attak
 
+and bp,0FF00H
+add bp,002c0h
+mov dx,bp
+
+
 mov si,0
 mov di,bp
 movsw
@@ -93,14 +98,14 @@ rep movsw ; copy killing block
 @begin_killing_block:
 mov cx,killer_loop_count ; loop 10 times
 @killing_loop:
-mov [bp],0xcc
-mov [bp],0xcc
-mov [bp],0xcc
-mov [bp],0xcc
-mov [bp],0xcc
-mov [bp],0xcc
-mov [bp],0xcc
-mov [bp],0xcc
+mov [bp+60H],0xcc
+mov [bp+60H],0xcc
+mov [bp+60H],0xcc
+mov [bp+60H],0xcc
+mov [bp+60H],0xcc
+mov [bp+60H],0xcc
+mov [bp+60H],0xcc
+mov [bp+60H],0xcc
 loop @killing_loop
 @end_killing_block:
 movsw

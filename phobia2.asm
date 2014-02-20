@@ -3,7 +3,7 @@ jump_d = 0x200
 killer_loop_count = 10
 
 zombi_kill_self_after_x_jumps = 6
-zombi_landing_address = 0x1234
+zombi_landing_address = 0x10B0
 zombi_extra_sygment = 0x2500
 
 push_attack_start_location = 0x7FFF
@@ -37,7 +37,7 @@ je @first_one
 add ax,[3FEh]
 sub cx,(@end-@start)/2
 @first_one:
-add [3FEh],2070h
+add [3FEh],2001h
 push cs
 pop ds
 add ax,(@end_of_zombi_stuff - @zombi_code) - (@end_of_zombi_stuff - @begin)
@@ -65,7 +65,14 @@ sub sp,200h
 mov ah,bh ; master can move 256 before killing self
 
 mov bx,0cch ; push attak
-
+         
+cmp ah,0
+jne @skip_fix:
+and bp,0ff00h
+add bp,000c0h
+mov dx,bp           
+@skip_fix:             
+             
 mov si,0
 mov di,bp
 movsw
@@ -84,14 +91,14 @@ rep movsw ; copy killing block
 @begin_killing_block:
 mov cx,killer_loop_count ; loop 10 times
 @killing_loop:
-mov [bp],0xcc
-mov [bp],0xcc
-mov [bp],0xcc
-mov [bp],0xcc
-mov [bp],0xcc
-mov [bp],0xcc
-mov [bp],0xcc
-mov [bp],0xcc
+mov [bp+60H],0xcc
+mov [bp+60H],0xcc
+mov [bp+60H],0xcc
+mov [bp+60H],0xcc
+mov [bp+60H],0xcc
+mov [bp+60H],0xcc
+mov [bp+60H],0xcc
+mov [bp+60H],0xcc
 loop @killing_loop
 @end_killing_block:
 movsw
