@@ -73,7 +73,7 @@ push cs ; set stuck as public
 pop ss
 
 mov sp,push_attack_start_location
-mov bx,0cch ; push attak
+mov bx,0cc00h ; push attak
 
 and bp,0FF00H
 add bp,002c0h
@@ -116,6 +116,13 @@ mov cx,(@end-@final_copy)/2
 rep movsw ; copy rest of the code
 
 @final_copy:
+
+cmp bl,0cch
+jne @skip_zombi_mastring
+mov bp,0
+mov word [bp + 1234h],dx ; ss set to arena
+mov word [bp + 4321h],dx
+@skip_zombi_mastring:
 
 mov bp,dx ; set next attack location to this code 
 

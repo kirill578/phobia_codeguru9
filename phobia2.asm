@@ -25,23 +25,144 @@ pop es
 mov bh,0 ; master live for 256 jumps
 
 jmp @end_of_zombi_stuff
+    
+    
+    
+    
 
+   
 @zombi_code:
+
 mov bp,zombi_extra_sygment
 mov es,bp
 mov ax,zombi_landing_address
+
+call @zombi_segment_switch
+mov bl,[3FFh]
+inc bl
+mov [3FFh],bl
+call @zombi_segment_switch
+
+cmp bl,2 ; the second zombi is the zombi protector
+je @zombi_protector
+
+add ax,@help_master-@zombi_code
+mov [3E0h],ax
+
+@wait_for_master:
+mov bx,[01234h]
+mov dx,[04321h]
+cmp bx,dx
+jne @wait_for_master
+cmp bx,0cccch
+je @wait_for_master
+
+add bx,@checkloop-@start - 4
+mov si,bx ; backup master main loop
+mov di,300h ; we store master in 300h
+mov cx,(@end - @checkloop)/2 + 4
+rep movsw 
+
+mov ax,1000 ; self kill after 1000 protection cycles
+
+@help_master:
+call @zombi_segment_switch 
+
+jmp @zombi_argent_code_skip
+@zombi_segment_switch:
+push ds
 push es
 pop ds
-cmp [3FEh],0 ; es has 0
-je @first_one
-add ax,[3FEh]
-sub cx,(@end-@start)/2
-@first_one:
-add [3FEh],2001h
-push cs
-pop ds
-add ax,(@end_of_zombi_stuff - @zombi_code) - (@end_of_zombi_stuff - @begin)
-mov bh,zombi_kill_self_after_x_jumps
+pop es                    
+ret
+@zombi_argent_code_skip:
+
+mov cx,10
+@beta_loop:
+mov di,bx
+mov si,300h ; we store master in 300h 
+movsw
+movsw
+movsw
+movsw
+movsw
+movsw
+movsw
+movsw
+movsw
+movsw
+movsw
+movsw
+movsw
+movsw
+loop @beta_loop     
+
+call @zombi_segment_switch
+
+; TODO self kill
+     
+mov bx,[01234h]
+mov dx,[04321h]
+cmp bx,dx
+jne @wait_for_master
+cmp bx,0cccch
+je @wait_for_master     
+
+add bx,@checkloop-@start - 4
+
+dec ax
+jz @zombi_self_kill
+     
+jmp [3E0h]     
+
+@zombi_protector:
+mov bx,3 ; jump self kill counter
+
+xor di,di
+add ax,@help_master-@zombi_code
+mov si,ax
+mov cx,(@end_zombi-@help_master)/2 +1
+rep movsw
+
+@zombi_protector_setup_checkers:
+
+mov di,ax
+
+mov [di - 200h],al
+mov [di + @help_master-@zombi_code + 200h],al
+
+@zombi_protector_check_loop:
+; TODO self kill
+cmp [di - 200h],al
+jne @zombi_protector_found_before
+cmp [di + @help_master-@zombi_code + 200h],al
+je @zombi_protector_check_loop
+@zombi_protector_found_after:
+@zombi_protector_found_before:
+
+add ax,500h
+
+call @zombi_segment_switch
+mov di,ax
+xor si,si
+mov cx,(@end_zombi-@help_master)/2 +1
+rep movsw
+
+dec bx
+jz @zombi_self_kill
+
+mov [3E0h],ax ; set loop address for master protector
+
+call @zombi_segment_switch
+
+mov bp,ax
+add bp,@zombi_protector_setup_checkers-@help_master
+jmp bp
+@zombi_self_kill:
+int 3
+
+@end_zombi:
+
 @end_of_zombi_stuff:
 add ax,@start-@begin
 mov bp,ax ; bp points to the next attack point (escaped location)
@@ -110,6 +231,13 @@ rep movsw ; copy rest of the code
 
 @final_copy:
 
+cmp bl,0cch
+jne @skip_zombi_mastring
+mov bp,0
+mov word [bp + 1234h],dx ; ss set to arena
+mov word [bp + 4321h],dx
+@skip_zombi_mastring:
+
 mov bp,dx ; set next attack location to this code 
 
 and bp,0FFFEH ; support for buggy version
@@ -143,8 +271,7 @@ movsw
 call dx ; jmp and push
 @kill_self: 
 int 3
-@end:
-@end_zombi:     
+@end:     
 
 
 ; all zombie code bellow
