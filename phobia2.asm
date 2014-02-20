@@ -33,6 +33,10 @@ jmp @end_of_zombi_stuff
    
 @zombi_code:
 
+mov cx,20
+@wait_zombi_too_quick:
+loop @wait_zombi_too_quick 
+
 mov bp,zombi_extra_sygment
 mov es,bp
 mov ax,zombi_landing_address
