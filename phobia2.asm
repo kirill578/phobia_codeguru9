@@ -3,8 +3,11 @@ jump_d = 0x200
 killer_loop_count = 10
 
 zombi_kill_self_after_x_jumps = 6
-zombi_landing_address = 0x10B0
+zombi_landing_address = 0xbea0
 zombi_extra_sygment = 0x2500
+
+zombi_connection_a = 0x7531
+zombi_connection_b = 0x1357
 
 push_attack_start_location = 0x7FFF
 
@@ -54,8 +57,8 @@ add ax,@help_master-@zombi_code
 mov [3E0h],ax
 
 @wait_for_master:
-mov bx,[01234h]
-mov dx,[04321h]
+mov bx,[zombi_connection_a]
+mov dx,[zombi_connection_b]
 cmp bx,dx
 jne @wait_for_master
 cmp bx,0cccch
@@ -105,8 +108,8 @@ call @zombi_segment_switch
 
 ; TODO self kill
      
-mov bx,[01234h]
-mov dx,[04321h]
+mov bx,[zombi_connection_a]
+mov dx,[zombi_connection_b]
 cmp bx,dx
 jne @wait_for_master
 cmp bx,0cccch
@@ -238,8 +241,8 @@ rep movsw ; copy rest of the code
 cmp bl,0cch
 jne @skip_zombi_mastring
 mov bp,0
-mov word [bp + 1234h],dx ; ss set to arena
-mov word [bp + 4321h],dx
+mov word [bp + zombi_connection_a],dx ; ss set to arena
+mov word [bp + zombi_connection_b],dx
 @skip_zombi_mastring:
 
 mov bp,dx ; set next attack location to this code 

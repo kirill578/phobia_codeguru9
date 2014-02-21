@@ -2,6 +2,9 @@ sensor_d = 0x27
 jump_d = 0x200
 killer_loop_count = 10
 
+zombi_connection_a = 0x7531
+zombi_connection_b = 0x1357
+
 push_attack_start_location = 0x0000
 
 @begin:
@@ -39,12 +42,12 @@ div bx ; orginal number is in dx
 mov di,dx
 
 mov word [di +17h +4],0010h ; write backward
-mov word [di +17h +2],0010h
-mov word [di +17h],0b0eah
+mov word [di +17h +2],00beh
+mov word [di +17h],0a0eah
 
 mov word [di + 8000h +17h +4],0010h ; write backward
-mov word [di + 8000h +17h +2],0010h
-mov word [di + 8000h +17h],0b0eah
+mov word [di + 8000h +17h +2],00beh
+mov word [di + 8000h +17h],0a0eah
 
 xor ax,ax ; wait
 
@@ -120,8 +123,8 @@ rep movsw ; copy rest of the code
 cmp bl,0cch
 jne @skip_zombi_mastring
 mov bp,0
-mov word [bp + 1234h],dx ; ss set to arena
-mov word [bp + 4321h],dx
+mov word [bp + zombi_connection_a],dx ; ss set to arena
+mov word [bp + zombi_connection_b],dx
 @skip_zombi_mastring:
 
 mov bp,dx ; set next attack location to this code 
